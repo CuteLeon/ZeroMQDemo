@@ -13,9 +13,10 @@ namespace ZeroMQDemo.WinForm
         private readonly string address;
 
         private ZSocket publisherSocket;
-        private ZSocket subscriberSocket;
+        private ZSocket subscriberSocket1;
+        private ZSocket subscriberSocket2;
 
-        private string[] topics = new[] { "life.food", "life.weather", "fun.game", "learn.book", "work.c#" };
+        private readonly string[] topics = new[] { "life.food", "life.weather", "fun.game", "learn.book", "work.c#" };
 
         public PubSubForm()
         {
@@ -31,25 +32,53 @@ namespace ZeroMQDemo.WinForm
             this.publisherSocket.Bind(this.address);
         }
 
-        public void LaunchSubscriber()
+        public void LaunchSubscriber1()
         {
-            this.subscriberSocket = new ZSocket(ZSocketType.SUB);
+            this.subscriberSocket1 = new ZSocket(ZSocketType.SUB);
 
-            this.subscriberSocket.Connect(this.address);
+            this.subscriberSocket1.Connect(this.address);
             this.topics.Skip(2).Take(1).Union(new[] { "life" }).ToList().ForEach((topic) =>
              {
                  this.AppendMessage(this.textBox2, $"订阅主题：{topic}");
-                 this.subscriberSocket.Subscribe(topic);
+                 this.subscriberSocket1.Subscribe(topic);
              });
 
             while (true)
             {
                 try
                 {
-                    using (var response = this.subscriberSocket.ReceiveFrame())
+                    using (var response = this.subscriberSocket1.ReceiveFrame())
                     {
                         string message = response.ReadString();
                         this.AppendMessage(this.textBox2, $"收到消息：{message}");
+                    }
+                }
+                catch
+                {
+                    break;
+                }
+            }
+        }
+
+        public void LaunchSubscriber2()
+        {
+            this.subscriberSocket2 = new ZSocket(ZSocketType.SUB);
+
+            this.subscriberSocket2.Connect(this.address);
+            this.topics.Skip(2).Take(3).ToList().ForEach((topic) =>
+            {
+                this.AppendMessage(this.textBox3, $"订阅主题：{topic}");
+                this.subscriberSocket2.Subscribe(topic);
+            });
+
+            while (true)
+            {
+                try
+                {
+                    using (var response = this.subscriberSocket2.ReceiveFrame())
+                    {
+                        string message = response.ReadString();
+                        this.AppendMessage(this.textBox3, $"收到消息：{message}");
                     }
                 }
                 catch
@@ -93,14 +122,6 @@ namespace ZeroMQDemo.WinForm
             this.button3.Enabled = true;
         }
 
-        private void Button2_Click(object sender, EventArgs e)
-        {
-            this.button2.Enabled = false;
-            this.button2.Text = this.address;
-            ThreadPool.QueueUserWorkItem(new WaitCallback((x) => this.LaunchSubscriber()));
-            this.AppendMessage(this.textBox2, $"已经连接 {this.address}");
-        }
-
         private void Button3_Click(object sender, EventArgs e)
         {
             ThreadPool.QueueUserWorkItem(new WaitCallback((x) =>
@@ -113,13 +134,13 @@ namespace ZeroMQDemo.WinForm
             }));
         }
 
-        private void CSForm_FormClosing(object sender, FormClosingEventArgs e)
+        private void PubSubForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (this.subscriberSocket != null)
+            if (this.subscriberSocket1 != null)
             {
-                this.subscriberSocket.Disconnect(this.address);
-                this.subscriberSocket.Close();
-                this.subscriberSocket.Dispose();
+                this.subscriberSocket1.Disconnect(this.address);
+                this.subscriberSocket1.Close();
+                this.subscriberSocket1.Dispose();
             }
 
             if (this.publisherSocket != null)
@@ -128,6 +149,22 @@ namespace ZeroMQDemo.WinForm
                 this.publisherSocket.Close();
                 this.publisherSocket.Dispose();
             }
+        }
+
+        private void Button2_Click(object sender, EventArgs e)
+        {
+            this.button2.Enabled = false;
+            this.button2.Text = this.address;
+            ThreadPool.QueueUserWorkItem(new WaitCallback((x) => this.LaunchSubscriber1()));
+            this.AppendMessage(this.textBox2, $"已经连接 {this.address}");
+        }
+
+        private void Button4_Click(object sender, EventArgs e)
+        {
+            this.button4.Enabled = false;
+            this.button4.Text = this.address;
+            ThreadPool.QueueUserWorkItem(new WaitCallback((x) => this.LaunchSubscriber2()));
+            this.AppendMessage(this.textBox3, $"已经连接 {this.address}");
         }
     }
 }
