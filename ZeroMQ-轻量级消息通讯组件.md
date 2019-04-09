@@ -37,9 +37,7 @@
 >
 > https://github.com/zeromq/netmq
 >
-> Nuget: NetMQ 4.0.0.207-pre(2019年3月)
->
-> VS可下载的最新版本：4.0.0.1 发布于 2017/1/22
+> Nuget: NetMQ 4.0.0.207-pre(2019年1月24日)
 
 
 
