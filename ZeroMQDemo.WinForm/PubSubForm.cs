@@ -42,13 +42,19 @@ namespace ZeroMQDemo.WinForm
                  this.subscriberSocket.Subscribe(topic);
              });
 
-
             while (true)
             {
-                using (var response = this.subscriberSocket.ReceiveFrame())
+                try
                 {
-                    string message = response.ReadString();
-                    this.AppendMessage(this.textBox2, $"收到消息：{message}");
+                    using (var response = this.subscriberSocket.ReceiveFrame())
+                    {
+                        string message = response.ReadString();
+                        this.AppendMessage(this.textBox2, $"收到消息：{message}");
+                    }
+                }
+                catch
+                {
+                    break;
                 }
             }
         }

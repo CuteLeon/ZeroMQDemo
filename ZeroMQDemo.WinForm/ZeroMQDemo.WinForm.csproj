@@ -71,6 +71,12 @@
     <Compile Include="PubSubForm.Designer.cs">
       <DependentUpon>PubSubForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="PushPullForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PushPullForm.Designer.cs">
+      <DependentUpon>PushPullForm.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="CSForm.resx">
       <DependentUpon>CSForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -88,6 +94,9 @@
     </Compile>
     <EmbeddedResource Include="PubSubForm.resx">
       <DependentUpon>PubSubForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PushPullForm.resx">
+      <DependentUpon>PushPullForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
