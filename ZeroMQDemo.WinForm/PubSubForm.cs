@@ -115,12 +115,19 @@ namespace ZeroMQDemo.WinForm
 
         private void CSForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            this.subscriberSocket.Disconnect(this.address);
-            this.subscriberSocket.Close();
-            this.subscriberSocket.Dispose();
-            this.publisherSocket.Unbind(this.address);
-            this.publisherSocket.Close();
-            this.publisherSocket.Dispose();
+            if (this.subscriberSocket != null)
+            {
+                this.subscriberSocket.Disconnect(this.address);
+                this.subscriberSocket.Close();
+                this.subscriberSocket.Dispose();
+            }
+
+            if (this.publisherSocket != null)
+            {
+                this.publisherSocket.Unbind(this.address);
+                this.publisherSocket.Close();
+                this.publisherSocket.Dispose();
+            }
         }
     }
 }

@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ZeroMQDemo.WinForm
@@ -26,6 +19,12 @@ namespace ZeroMQDemo.WinForm
         private void Button2_Click(object sender, EventArgs e)
         {
             PubSubForm form = new PubSubForm();
+            form.Show(this);
+        }
+
+        private void Button3_Click(object sender, EventArgs e)
+        {
+            PushPullForm form = new PushPullForm();
             form.Show(this);
         }
     }
