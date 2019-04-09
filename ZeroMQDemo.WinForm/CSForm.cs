@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Windows.Forms;
+
 using ZeroMQ;
 
 namespace ZeroMQDemo.WinForm
@@ -43,6 +44,7 @@ namespace ZeroMQDemo.WinForm
                         }
                         catch
                         {
+                            break;
                         }
                     }
                 }
@@ -101,7 +103,7 @@ namespace ZeroMQDemo.WinForm
         {
             ThreadPool.QueueUserWorkItem(new WaitCallback((x) =>
             {
-                this.clientSocket.Send(new ZFrame(DateTime.Now.ToString()));
+                this.clientSocket.Send(new ZFrame(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")));
                 using (ZFrame response = this.clientSocket.ReceiveFrame())
                 {
                     this.AppendMessage(this.textBox2, $"客户端收到消息：{response.ReadString()}");
@@ -114,6 +116,7 @@ namespace ZeroMQDemo.WinForm
             this.clientSocket.Disconnect(this.address);
             this.clientSocket.Close();
             this.clientSocket.Dispose();
+
             this.serverSocket.Unbind(this.address);
             this.serverSocket.Close();
             this.serverSocket.Dispose();
