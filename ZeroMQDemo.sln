@@ -5,6 +5,11 @@ VisualStudioVersion = 16.0.28729.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZeroMQDemo.WinForm", "ZeroMQDemo.WinForm\ZeroMQDemo.WinForm.csproj", "{99C953B2-CDC4-4EAA-BFCE-F10F7EF5E0AD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "文档", "文档", "{9A33BE70-CB8B-4021-92C3-6EEFF68B9906}"
+	ProjectSection(SolutionItems) = preProject
+		ZeroMQ-轻量级消息通讯组件.md = ZeroMQ-轻量级消息通讯组件.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
