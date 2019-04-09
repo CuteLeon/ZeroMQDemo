@@ -134,11 +134,14 @@ namespace ZeroMQDemo.WinForm
 
         private void Button3_Click(object sender, EventArgs e)
         {
-            for (int index = 0; index < 5; index++)
+            ThreadPool.QueueUserWorkItem(new WaitCallback((x) =>
             {
-                this.AppendMessage(this.textBox1, $"发布任务：{index}");
-                this.ventilatorSocket.Send(new ZFrame($"发布任务-{index}"));
-            }
+                for (int index = 0; index < 5; index++)
+                {
+                    this.AppendMessage(this.textBox1, $"发布任务：{index}");
+                    this.ventilatorSocket.Send(new ZFrame($"发布任务-{index}"));
+                }
+            }));
         }
 
         private void Button4_Click(object sender, EventArgs e)
