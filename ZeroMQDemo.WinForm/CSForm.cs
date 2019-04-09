@@ -32,11 +32,17 @@ namespace ZeroMQDemo.WinForm
                     string message = string.Empty;
                     while (true)
                     {
-                        using (ZFrame request = this.serverSocket.ReceiveFrame())
+                        try
                         {
-                            message = request.ReadString();
-                            this.AppendMessage(this.textBox1, $"服务端收到消息：{message}");
-                            this.serverSocket.Send(new ZFrame($"确认收到消息：{message.GetHashCode().ToString("X")}"));
+                            using (ZFrame request = this.serverSocket.ReceiveFrame())
+                            {
+                                message = request.ReadString();
+                                this.AppendMessage(this.textBox1, $"服务端收到消息：{message}");
+                                this.serverSocket.Send(new ZFrame($"确认回执：{message.GetHashCode().ToString("X")}"));
+                            }
+                        }
+                        catch
+                        {
                         }
                     }
                 }
@@ -106,7 +112,9 @@ namespace ZeroMQDemo.WinForm
         private void CSForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             this.clientSocket.Disconnect(this.address);
+            this.clientSocket.Close();
             this.clientSocket.Dispose();
+            this.serverSocket.Unbind(this.address);
             this.serverSocket.Close();
             this.serverSocket.Dispose();
         }

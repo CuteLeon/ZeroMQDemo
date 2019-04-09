@@ -22,5 +22,11 @@ namespace ZeroMQDemo.WinForm
             CSForm form = new CSForm();
             form.Show(this);
         }
+
+        private void Button2_Click(object sender, EventArgs e)
+        {
+            PubSubForm form = new PubSubForm();
+            form.Show(this);
+        }
     }
 }
