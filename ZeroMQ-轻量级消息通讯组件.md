@@ -67,9 +67,16 @@
 
 
 
+## 例子：
+
+https://github.com/booksbyus/zguide/tree/master/examples/C%23
 
 
 
 
 
+## clrzmq4：
 
+### C/S模式：
+
+​	这个经典的模式在 zeroMQ 中是应答状态的，不能同时 send 多个数据，客户端和服务端必须一呼一应。

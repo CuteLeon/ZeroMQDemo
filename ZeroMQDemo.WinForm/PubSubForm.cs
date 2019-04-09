@@ -10,17 +10,11 @@ using System.Windows.Forms;
 
 namespace ZeroMQDemo.WinForm
 {
-    public partial class LaunchForm : Form
+    public partial class PubSubForm : Form
     {
-        public LaunchForm()
+        public PubSubForm()
         {
-            this.InitializeComponent();
-        }
-
-        private void Button1_Click(object sender, EventArgs e)
-        {
-            CSForm form = new CSForm();
-            form.Show(this);
+            InitializeComponent();
         }
     }
 }
