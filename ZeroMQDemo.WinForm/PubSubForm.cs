@@ -28,14 +28,20 @@ namespace ZeroMQDemo.WinForm
 
         public void LaunchSubscriber1()
         {
-            this.subscriberSocket1 = new ZSocket(ZSocketType.SUB);
-
-            this.subscriberSocket1.Connect(this.address);
-            this.topics.Skip(2).Take(1).Union(new[] { "life" }).ToList().ForEach((topic) =>
-             {
-                 this.AppendMessage(this.textBox2, $"订阅主题：{topic}");
-                 this.subscriberSocket1.Subscribe(topic);
-             });
+            if (this.subscriberSocket1 == null)
+            {
+                this.subscriberSocket1 = new ZSocket(ZSocketType.SUB);
+                this.subscriberSocket1.Connect(this.address);
+                this.topics.Skip(2).Take(1).Union(new[] { "life" }).ToList().ForEach((topic) =>
+                 {
+                     this.AppendMessage(this.textBox2, $"订阅主题：{topic}");
+                     this.subscriberSocket1.Subscribe(topic);
+                 });
+            }
+            else
+            {
+                this.subscriberSocket1.Connect(this.address);
+            }
 
             while (true)
             {
@@ -154,6 +160,7 @@ namespace ZeroMQDemo.WinForm
         private void Button2_Click(object sender, EventArgs e)
         {
             this.button2.Enabled = false;
+            this.button6.Enabled = true;
             this.button2.Text = this.address;
             ThreadPool.QueueUserWorkItem(new WaitCallback((x) => this.LaunchSubscriber1()));
             this.AppendMessage(this.textBox2, $"已经连接 {this.address}");
@@ -176,6 +183,15 @@ namespace ZeroMQDemo.WinForm
              * Disconnect() 方法仅仅断开连接，继续 Send() 不会报错；下次使用重新 Bind() 即可；期间订阅者不用进行任何操作，也不用重新连接发布者；
              */
             this.publisherSocket.Disconnect(this.address);
+        }
+
+        private void Button6_Click(object sender, EventArgs e)
+        {
+            this.button6.Enabled = false;
+            this.button2.Enabled = true;
+
+            // 订阅者可以随时断开连接并重新连接
+            this.subscriberSocket1.Disconnect(address);
         }
     }
 }
