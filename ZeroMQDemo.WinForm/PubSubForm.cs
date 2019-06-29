@@ -129,7 +129,10 @@ namespace ZeroMQDemo.WinForm
                 foreach (var topic in this.topics)
                 {
                     this.AppendMessage(this.textBox1, $"正在发布消息：主题={topic}");
-                    this.publisherSocket.Send(new ZFrame($"{topic} {DateTime.Now.Millisecond}"));
+                    using (var frame = new ZFrame($"{topic} {DateTime.Now.Millisecond}"))
+                    {
+                        this.publisherSocket.Send(frame);
+                    }
                 }
             }));
         }
