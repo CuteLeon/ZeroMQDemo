@@ -12,7 +12,7 @@ namespace ZeroMQDemo.WinForm
         private readonly int port;
         private readonly string address;
 
-        private ZSocket publisherSocket;
+        private ZSocket publisherSocket = new ZSocket(ZSocketType.PUB);
         private ZSocket subscriberSocket1;
         private ZSocket subscriberSocket2;
 
@@ -24,12 +24,6 @@ namespace ZeroMQDemo.WinForm
             this.address = $"tcp://127.0.0.1:{this.port}";
 
             this.InitializeComponent();
-        }
-
-        public void LaunchPublisher()
-        {
-            this.publisherSocket = new ZSocket(ZSocketType.PUB);
-            this.publisherSocket.Bind(this.address);
         }
 
         public void LaunchSubscriber1()
@@ -117,7 +111,10 @@ namespace ZeroMQDemo.WinForm
         {
             this.button1.Enabled = false;
             this.button1.Text = this.address;
-            ThreadPool.QueueUserWorkItem(new WaitCallback((x) => this.LaunchPublisher()));
+            this.button5.Enabled = true;
+
+            this.publisherSocket.Bind(this.address);
+
             this.AppendMessage(this.textBox1, $"开始监听 {this.address}");
             this.button3.Enabled = true;
         }
@@ -168,6 +165,17 @@ namespace ZeroMQDemo.WinForm
             this.button4.Text = this.address;
             ThreadPool.QueueUserWorkItem(new WaitCallback((x) => this.LaunchSubscriber2()));
             this.AppendMessage(this.textBox3, $"已经连接 {this.address}");
+        }
+
+        private void Button5_Click(object sender, EventArgs e)
+        {
+            this.button5.Enabled = false;
+            this.button1.Enabled = true;
+
+            /* Close() 方法会自动 Dispose()，继续 Send() 将会报错；下次使用应 new 新的对象；
+             * Disconnect() 方法仅仅断开连接，继续 Send() 不会报错；下次使用重新 Bind() 即可；
+             */
+            this.publisherSocket.Disconnect(this.address);
         }
     }
 }
