@@ -172,8 +172,8 @@ namespace ZeroMQDemo.WinForm
             this.button5.Enabled = false;
             this.button1.Enabled = true;
 
-            /* Close() 方法会自动 Dispose()，继续 Send() 将会报错；下次使用应 new 新的对象；
-             * Disconnect() 方法仅仅断开连接，继续 Send() 不会报错；下次使用重新 Bind() 即可；
+            /* Close() 方法会自动 Dispose()，继续 Send() 将会报错；下次使用应 new 新的对象；期间订阅者不用进行任何操作，也不用重新连接发布者；
+             * Disconnect() 方法仅仅断开连接，继续 Send() 不会报错；下次使用重新 Bind() 即可；期间订阅者不用进行任何操作，也不用重新连接发布者；
              */
             this.publisherSocket.Disconnect(this.address);
         }
