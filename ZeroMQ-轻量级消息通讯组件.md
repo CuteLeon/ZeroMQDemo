@@ -29,7 +29,7 @@
 
 > 原生C#
 >
-> \> .NetStandard 1.3
+> \> .NetStandard 1.6\2.0
 >
 > \> .NetFramework 4.0
 >
@@ -37,7 +37,7 @@
 >
 > https://github.com/zeromq/netmq
 >
-> Nuget: NetMQ 4.0.0.207-pre(2019年1月24日)
+> Nuget: NetMQ 4.0.0.207(2019年7月1日)
 
 
 
@@ -59,7 +59,7 @@
 
 > LGPL协议
 >
-> 现在MQ框架，可以使用常见的ZMQ模式
+> 现代MQ框架，可以使用常见的ZMQ模式
 >
 > 社区不活跃
 >
