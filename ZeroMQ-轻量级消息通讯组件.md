@@ -27,7 +27,7 @@
 
 ### NetMQ
 
-> 原生C#
+> 原生C#，是对 ZeroMQ 的 C# 封装，更易用；
 >
 > \> .NetStandard 1.6\2.0
 >

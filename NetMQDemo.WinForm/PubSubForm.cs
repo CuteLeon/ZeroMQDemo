@@ -2,19 +2,19 @@
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
+using NetMQ;
+using NetMQ.Sockets;
 
-using ZeroMQ;
-
-namespace ZeroMQDemo.WinForm
+namespace NetMQDemo.WinForm
 {
     public partial class PubSubForm : Form
     {
         private readonly int port;
         private readonly string address;
 
-        private ZSocket publisherSocket = new ZSocket(ZSocketType.PUB);
-        private ZSocket subscriberSocket1;
-        private ZSocket subscriberSocket2;
+        private PublisherSocket publisherSocket = new PublisherSocket();
+        private SubscriberSocket subscriberSocket1;
+        private SubscriberSocket subscriberSocket2;
 
         private readonly string[] topics = new[] { "life.food", "life.weather", "fun.game", "learn.book", "work.c#" };
 
@@ -30,8 +30,7 @@ namespace ZeroMQDemo.WinForm
         {
             if (this.subscriberSocket1 == null)
             {
-                this.subscriberSocket1 = new ZSocket(ZSocketType.SUB);
-                this.subscriberSocket1.Connect(this.address);
+                this.subscriberSocket1 = new SubscriberSocket(this.address);
                 this.topics.Skip(2).Take(1).Union(new[] { "life" }).ToList().ForEach((topic) =>
                  {
                      this.AppendMessage(this.textBox2, $"订阅主题：{topic}");
@@ -47,14 +46,12 @@ namespace ZeroMQDemo.WinForm
             {
                 try
                 {
-                    using (var response = this.subscriberSocket1.ReceiveFrame())
-                    {
-                        string message = response.ReadString();
-                        this.AppendMessage(this.textBox2, $"收到消息：{message}");
-                    }
+                    string message = this.subscriberSocket1.ReceiveFrameString();
+                    this.AppendMessage(this.textBox2, $"收到消息：{message}");
                 }
-                catch
+                catch (Exception ex)
                 {
+                    this.AppendMessage(this.textBox2, $"接收消息异常：{ex.Message}");
                     break;
                 }
             }
@@ -62,9 +59,7 @@ namespace ZeroMQDemo.WinForm
 
         public void LaunchSubscriber2()
         {
-            this.subscriberSocket2 = new ZSocket(ZSocketType.SUB);
-
-            this.subscriberSocket2.Connect(this.address);
+            this.subscriberSocket2 = new SubscriberSocket(this.address);
             this.topics.Skip(2).Take(3).ToList().ForEach((topic) =>
             {
                 this.AppendMessage(this.textBox3, $"订阅主题：{topic}");
@@ -75,14 +70,12 @@ namespace ZeroMQDemo.WinForm
             {
                 try
                 {
-                    using (var response = this.subscriberSocket2.ReceiveFrame())
-                    {
-                        string message = response.ReadString();
-                        this.AppendMessage(this.textBox3, $"收到消息：{message}");
-                    }
+                    string message = this.subscriberSocket2.ReceiveFrameString();
+                    this.AppendMessage(this.textBox3, $"收到消息：{message}");
                 }
-                catch
+                catch (Exception ex)
                 {
+                    this.AppendMessage(this.textBox3, $"接收消息异常：{ex.Message}");
                     break;
                 }
             }
@@ -132,10 +125,7 @@ namespace ZeroMQDemo.WinForm
                 foreach (var topic in this.topics)
                 {
                     this.AppendMessage(this.textBox1, $"正在发布消息：主题={topic}");
-                    using (var frame = new ZFrame($"{topic} {DateTime.Now.Millisecond}"))
-                    {
-                        this.publisherSocket.Send(frame);
-                    }
+                    this.publisherSocket.SendFrame($"{topic} {DateTime.Now.Millisecond}");
                 }
             }));
         }
