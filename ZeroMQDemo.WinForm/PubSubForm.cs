@@ -12,7 +12,7 @@ namespace ZeroMQDemo.WinForm
         private readonly int port;
         private readonly string address;
 
-        private ZSocket publisherSocket;
+        private ZSocket publisherSocket = new ZSocket(ZSocketType.PUB);
         private ZSocket subscriberSocket1;
         private ZSocket subscriberSocket2;
 
@@ -26,22 +26,22 @@ namespace ZeroMQDemo.WinForm
             this.InitializeComponent();
         }
 
-        public void LaunchPublisher()
-        {
-            this.publisherSocket = new ZSocket(ZSocketType.PUB);
-            this.publisherSocket.Bind(this.address);
-        }
-
         public void LaunchSubscriber1()
         {
-            this.subscriberSocket1 = new ZSocket(ZSocketType.SUB);
-
-            this.subscriberSocket1.Connect(this.address);
-            this.topics.Skip(2).Take(1).Union(new[] { "life" }).ToList().ForEach((topic) =>
-             {
-                 this.AppendMessage(this.textBox2, $"订阅主题：{topic}");
-                 this.subscriberSocket1.Subscribe(topic);
-             });
+            if (this.subscriberSocket1 == null)
+            {
+                this.subscriberSocket1 = new ZSocket(ZSocketType.SUB);
+                this.subscriberSocket1.Connect(this.address);
+                this.topics.Skip(2).Take(1).Union(new[] { "life" }).ToList().ForEach((topic) =>
+                 {
+                     this.AppendMessage(this.textBox2, $"订阅主题：{topic}");
+                     this.subscriberSocket1.Subscribe(topic);
+                 });
+            }
+            else
+            {
+                this.subscriberSocket1.Connect(this.address);
+            }
 
             while (true)
             {
@@ -117,7 +117,10 @@ namespace ZeroMQDemo.WinForm
         {
             this.button1.Enabled = false;
             this.button1.Text = this.address;
-            ThreadPool.QueueUserWorkItem(new WaitCallback((x) => this.LaunchPublisher()));
+            this.button5.Enabled = true;
+
+            this.publisherSocket.Bind(this.address);
+
             this.AppendMessage(this.textBox1, $"开始监听 {this.address}");
             this.button3.Enabled = true;
         }
@@ -129,7 +132,10 @@ namespace ZeroMQDemo.WinForm
                 foreach (var topic in this.topics)
                 {
                     this.AppendMessage(this.textBox1, $"正在发布消息：主题={topic}");
-                    this.publisherSocket.Send(new ZFrame($"{topic} {DateTime.Now.Millisecond}"));
+                    using (var frame = new ZFrame($"{topic} {DateTime.Now.Millisecond}"))
+                    {
+                        this.publisherSocket.Send(frame);
+                    }
                 }
             }));
         }
@@ -154,6 +160,7 @@ namespace ZeroMQDemo.WinForm
         private void Button2_Click(object sender, EventArgs e)
         {
             this.button2.Enabled = false;
+            this.button6.Enabled = true;
             this.button2.Text = this.address;
             ThreadPool.QueueUserWorkItem(new WaitCallback((x) => this.LaunchSubscriber1()));
             this.AppendMessage(this.textBox2, $"已经连接 {this.address}");
@@ -165,6 +172,26 @@ namespace ZeroMQDemo.WinForm
             this.button4.Text = this.address;
             ThreadPool.QueueUserWorkItem(new WaitCallback((x) => this.LaunchSubscriber2()));
             this.AppendMessage(this.textBox3, $"已经连接 {this.address}");
+        }
+
+        private void Button5_Click(object sender, EventArgs e)
+        {
+            this.button5.Enabled = false;
+            this.button1.Enabled = true;
+
+            /* Close() 方法会自动 Dispose()，继续 Send() 将会报错；下次使用应 new 新的对象；期间订阅者不用进行任何操作，也不用重新连接发布者；
+             * Disconnect() 方法仅仅断开连接，继续 Send() 不会报错；下次使用重新 Bind() 即可；期间订阅者不用进行任何操作，也不用重新连接发布者；
+             */
+            this.publisherSocket.Disconnect(this.address);
+        }
+
+        private void Button6_Click(object sender, EventArgs e)
+        {
+            this.button6.Enabled = false;
+            this.button2.Enabled = true;
+
+            // 订阅者可以随时断开连接并重新连接
+            this.subscriberSocket1.Disconnect(address);
         }
     }
 }
